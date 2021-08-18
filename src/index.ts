@@ -1,4 +1,4 @@
-import { ProxyServer } from "./proxy";
+import { ProxyServer } from "./proxyServer";
 
 const p = new ProxyServer({
     destinationHost: "localhost",
