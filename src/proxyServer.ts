@@ -100,7 +100,7 @@ export class ProxyServer {
                 version: this.version
             });
 
-            this.targetClient.on("packet", (data, meta: mc.PacketMeta) => { // CLIENTBOUND PACKET HANDLING
+            this.targetClient.on("packet", (data: Record<string, any>, meta: mc.PacketMeta) => { // CLIENTBOUND PACKET HANDLING
                 this.clientbound.emit("packet", data, meta);
                 this.clientbound.emit(meta.name, data, meta);
                 // TODO: emit raw, raw.packet
@@ -215,14 +215,14 @@ export class ProxyServer {
         });
     }
 
-    public writeToAllClients(name: string, params: any): void {
+    public writeToAllClients(name: string, params: Record<string, any>): void {
         this.clients.forEach((c) => {
             c._client.write(name, params);
         });
     }
 
     // use this function when you need to resync other clients with new change
-    public writeToOtherClients(client: ProxyClient, name: string, params: any): void {
+    public writeToOtherClients(client: ProxyClient, name: string, params: Record<string, any>): void {
         this.clients.forEach((c) => {
             if(c !== client) {
                 c._client.write(name, params);

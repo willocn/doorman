@@ -34,7 +34,7 @@ export class ProxyClient { // currently wraps nmp client: maybe later extend it?
     }
 
     //TODO: move out to client sync plugin
-    public parseMovementPackets(data: any, meta: mc.PacketMeta): void {
+    public parseMovementPackets(data: Record<string, any>, meta: mc.PacketMeta): void {
         if (meta.name === "position_look") {
             this.proxy.facing.pitch = data.pitch;
             this.proxy.facing.yaw = data.yaw;
@@ -62,7 +62,7 @@ export class ProxyClient { // currently wraps nmp client: maybe later extend it?
         });
     }
 
-    public handlePacket = (data: any, meta: mc.PacketMeta): void => {
+    public handlePacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
         if (this.canSendPacket(meta)) {
             this.proxy.serverbound.emit("packet", data, meta); //TODO: also emit client
             this.proxy.serverbound.emit(meta.name, data, meta);
@@ -81,12 +81,12 @@ export class ProxyClient { // currently wraps nmp client: maybe later extend it?
         return;
     }
 
-    public handleEnd = () => {
+    public handleEnd = (): void => {
         logger.error("Connection closed by client", "(" + this.addr + ")");
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
     }
 
-    public handleError = (err: Error) => {
+    public handleError = (err: Error): void => {
         logger.error("Connection error by client", "(" + this.addr + ")");
         logger.error(err.stack);
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
