@@ -64,8 +64,8 @@ export class ProxyClient { // currently wraps nmp client: maybe later extend it?
 
     public handlePacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
         if (this.canSendPacket(meta)) {
-            this.proxy.serverbound.emit("packet", data, meta); //TODO: also emit client
-            this.proxy.serverbound.emit(meta.name, data, meta);
+            this.proxy.serverbound.emit("packet", data, meta, this); //TODO: also emit client
+            this.proxy.serverbound.emit(meta.name, data, meta, this);
             // TODO: emit raw, raw.packet
             if (this.proxy.targetClient) {
                 if (this.proxy.targetClient.state === states.PLAY && meta.state === states.PLAY) {
