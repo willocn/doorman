@@ -65,7 +65,24 @@ export default class ProxyServer {
             keepAlive: false, // client in control will handle keep alive packets
             version: this.version,
             maxPlayers: 0,
-            motd: "Proxy Rewrite",
+            motd: `§9doorman proxy§r\n§l§f▶§r ${this.destinationHost}:${this.destinationPort}`,
+            beforePing: (response, client) => {
+                response.players.sample = [
+                    {
+                        "name": `§9§n${this.pluginManager.loadedPlugins.length} plugins`,
+                        "id": "25a0048f-d105-4a57-b2f6-2ee88b87d684"
+                    }
+                ];
+                response.players.sample = response.players.sample.concat(this.pluginManager.loadedPlugins.map((plugin) => {
+                    return {
+                        "name": plugin.constructor.name,
+                        "id": "25a0048f-d105-4a57-b2f6-2ee88b87d684"
+                    };
+                }));
+                
+                console.log(response.players);
+                return response;
+            }
         });
 
         if(config.icon) {
