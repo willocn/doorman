@@ -1,6 +1,6 @@
-import AbstractPlugin from "../../abstractPlugin";
-import PluginManager from "../../pluginManager";
-import ProxyServer from "../../proxyServer";
+import AbstractPlugin from "../../abstractPlugin.js";
+import PluginManager from "../../pluginManager.js";
+import ProxyServer from "../../proxyServer.js";
 
 export default class MetaPlugin extends AbstractPlugin {
     namespace = "meta";

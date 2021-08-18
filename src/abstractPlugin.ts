@@ -1,5 +1,5 @@
-import PluginManager from "./pluginManager";
-import ProxyServer from "./proxyServer";
+import PluginManager from "./pluginManager.js";
+import ProxyServer from "./proxyServer.js";
 
 export default class AbstractPlugin {
     proxyServer: ProxyServer;

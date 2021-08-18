@@ -1,8 +1,9 @@
-import  ProxyServer from "./proxyServer";
+import  ProxyServer from "./proxyServer.js";
 import * as mc from "minecraft-protocol";
-import logger from "./logger";
+import getLogger from "./logger.js";
 
 const states = mc.states;
+const logger = getLogger("client");
 
 export default class ProxyClient { // currently wraps nmp client: maybe later extend it?
     sendAllPackets = false;

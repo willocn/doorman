@@ -1,10 +1,10 @@
 import * as mc from "minecraft-protocol";
-import { EventEmitter } from "stream";
+import EventEmitter from "events";  
 import * as mineflayer from "mineflayer";
-import sleep from "./util/sleep";
-import ProxyClient from "./proxyClient";
-import logger from "./logger";
-import PluginManager from "./pluginManager";
+import sleep from "./util/sleep.js";
+import ProxyClient from "./proxyClient.js";
+import getLogger from "./logger.js";
+import PluginManager from "./pluginManager.js";
 
 interface Config {
     hostPort?: number,
@@ -12,8 +12,11 @@ interface Config {
     destinationHost: string,
     online?: boolean,
     username?: string,
-    password?: string;
+    password?: string,
+    icon?: string
 }
+
+const logger = getLogger("server");
 
 const states = mc.states;
 
@@ -48,20 +51,13 @@ export default class ProxyServer {
     bot: mineflayer.Bot | undefined;
 
     public constructor(config: Config) {
-        const {
-            hostPort = 25566,
-            destinationPort = 25565,
-            destinationHost,
-            online = false,
-            username = "ProxyBot",
-            password = undefined
-        } = config; // object destructuring (is this the best way to do this?)
-        this.hostPort = hostPort;
-        this.destinationPort = destinationPort;
-        this.destinationHost = destinationHost;
-        this.online = online;
-        this.username = username;
-        this.password = password;
+        
+        this.hostPort = config.hostPort ?? 25566;
+        this.destinationPort = config.destinationPort ?? 25565;
+        this.destinationHost = config.destinationHost ?? "localhost";
+        this.online = config.online ?? false;
+        this.username = config.username ?? "ProxyBot";
+        this.password = config.password;
         this.clients = [];
         this.srv = mc.createServer({
             "online-mode": false,
@@ -69,8 +65,13 @@ export default class ProxyServer {
             keepAlive: false, // client in control will handle keep alive packets
             version: this.version,
             maxPlayers: 0,
-            motd: "Proxy Rewrite"
+            motd: "Proxy Rewrite",
         });
+
+        if(config.icon) {
+            this.srv.favicon = config.icon;
+        }
+
         logger.info(`proxy to ${this.destinationHost}:${this.destinationPort} running on ${this.hostPort} :D`);
         this.srv.on("login", this.handleProxyLogin);
     }

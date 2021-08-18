@@ -1,7 +1,9 @@
-import AbstractPlugin from "./abstractPlugin";
-import ProxyServer from "./proxyServer";
-import * as plugins from "./plugins";
-import logger from "./logger";
+import AbstractPlugin from "./abstractPlugin.js";
+import ProxyServer from "./proxyServer.js";
+import * as plugins from "./plugins/index.js";
+import getLogger from "./logger.js";
+
+const logger = getLogger("pluginManager");
 
 export default class PluginManager {
     loadedPlugins: AbstractPlugin[] = [];
