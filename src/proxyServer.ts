@@ -3,6 +3,7 @@ import { EventEmitter } from "stream";
 import * as mineflayer from "mineflayer";
 import { sleep } from "./util/sleep";
 import { ProxyClient } from "./proxyClient";
+import { logger } from "./logger";
 
 interface Config {
     hostPort?: number,
@@ -67,18 +68,18 @@ export class ProxyServer {
             maxPlayers: 0,
             motd: "Proxy Rewrite"
         });
-        console.log(`proxy to ${this.destinationHost}:${this.destinationPort} running on ${this.hostPort}`);
+        logger.info(`proxy to ${this.destinationHost}:${this.destinationPort} running on ${this.hostPort}`);
         this.srv.on("login", this.handleProxyLogin);
     }
 
     public handleProxyLogin = (client: mc.Client): void => {
         const addr = client.socket.remoteAddress;
-        console.log("Incoming connection", "(" + addr + ")");
+        logger.info("Incoming connection", "(" + addr + ")");
         // console.log(this.clients);
         const pclient = new ProxyClient(client, this);
         this.clients.push(pclient);
         if (this.clients.length == 1) { // We need to handle the first client differently.
-            console.log("main client joined");
+            logger.debug("main client joined");
             pclient.sendAllPackets = true;
 
             this.bot = mineflayer.createBot({
@@ -119,8 +120,8 @@ export class ProxyServer {
 
             this.targetClient.on("end", (endReason) => {
                 this.endedTargetClient = true;
-                console.log("Connection closed by server");
-                console.log(endReason);
+                logger.error("Connection closed by server");
+                logger.error(endReason);
                 this.clients.forEach(c => {
                     c._client.end(endReason);
                 });
@@ -128,8 +129,8 @@ export class ProxyServer {
 
             this.targetClient.on("error", (err) => {
                 this.endedTargetClient = true;
-                console.log("Connection error by server", err);
-                console.log(err.stack);
+                logger.error("Connection error by server", err);
+                logger.error(err.stack);
                 this.clients.forEach(c => {
                     c._client.end("error on targetclient");
                 });
@@ -137,10 +138,14 @@ export class ProxyServer {
 
         // TODO: MAKE MINEFLAYER BOT USE CUSTOM CLIENT BRAND
         } else if(this.clients.length == 2) {
-            console.log("second client (bot) join");
+            logger.debug("second client (bot) join");
             // this.sendLoginPackets(pclient);
             this.bot?.once("spawn", () => {
                 this.bot?.chat("hai");
+            });
+
+            this.bot?.on("message", (chatMsg) => {
+                logger.info(chatMsg.toAnsi());
             });
 
             this.bot?.on("chat", async (username, message) => {

@@ -1,5 +1,6 @@
 import { ProxyServer } from "./proxyServer";
 import * as mc from "minecraft-protocol";
+import { logger } from "./logger";
 
 const states = mc.states;
 
@@ -81,13 +82,13 @@ export class ProxyClient { // currently wraps nmp client: maybe later extend it?
     }
 
     public handleEnd = () => {
-        console.log("Connection closed by client", "(" + this.addr + ")");
+        logger.error("Connection closed by client", "(" + this.addr + ")");
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
     }
 
     public handleError = (err: Error) => {
-        console.log("Connection error by client", "(" + this.addr + ")");
-        console.log(err.stack);
+        logger.error("Connection error by client", "(" + this.addr + ")");
+        logger.error(err.stack);
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
     }
 }

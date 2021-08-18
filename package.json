@@ -10,7 +10,8 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "minecraft-protocol": "^1.26.1",
-    "mineflayer": "^3.9.0"
+    "mineflayer": "^3.9.0",
+    "tslog": "^3.2.1"
   },
   "devDependencies": {
     "@types/node": "^16.6.1",
