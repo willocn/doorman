@@ -10,7 +10,6 @@ export default class PluginManager {
     constructor(server: ProxyServer) {
         this.proxyServer = server;
         Object.values(plugins).forEach(plug => {
-            console.log(plug);
             this.load(new plug(this.proxyServer, this));
         });
     }

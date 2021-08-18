@@ -1,4 +1,4 @@
-import { PacketMeta } from "minecraft-protocol";
+import * as mc from "minecraft-protocol";
 import AbstractPlugin from "../abstractPlugin";
 import PluginManager from "../pluginManager";
 import ProxyServer from "../proxyServer";
@@ -22,7 +22,7 @@ export default class HelloWorldPlugin extends AbstractPlugin {
     /*
     Example packet listener, runs every time the login packet is sent
     */
-    handleLoginPacket = (data: Record<string, any>, meta: PacketMeta): void => {
+    handleLoginPacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
         this.sendChat(`Logged in! :D eid: ${data.entityId}`);
     }
 }
