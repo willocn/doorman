@@ -22,7 +22,9 @@ Clone the repo
 
 `npm install`
 
-`node index.js`
+`npm run build`
+
+`npm run start`
 
 ## Usage
 
