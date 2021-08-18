@@ -12,7 +12,7 @@
     <br />
     <a href="https://github.com/willocn/doorman/issues">Report Bug</a>
     ·
-    <a href="https://inv.wtf/willocn">Request Feature</a>
+    <a href="https://inv.wtf/willocn">Join the Discord</a>
   </p>
 </p>
 
