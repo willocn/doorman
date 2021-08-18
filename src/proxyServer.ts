@@ -2,6 +2,7 @@ import * as mc from "minecraft-protocol";
 import { EventEmitter } from "stream";
 import * as mineflayer from "mineflayer";
 import { sleep } from "./util/sleep";
+import { ProxyClient } from "./proxyClient";
 
 interface Config {
     hostPort?: number,
@@ -80,7 +81,6 @@ export class ProxyServer {
             console.log("main client joined");
             pclient.sendAllPackets = true;
 
-            // TODO: INIT MINEFLAYER HERE SO STATE IS SYNCED
             this.bot = mineflayer.createBot({
                 host: "localhost",
                 port: this.hostPort,
@@ -171,7 +171,7 @@ export class ProxyServer {
                     for(let i = 0; i < 100; i++) {
                         this.writeToAllClients("animation", {
                             entityId: this.bot?.entity.id,
-                            animation: 3
+                            animation: 1
                         });
                         await sleep(50);
                     }
@@ -223,93 +223,5 @@ export class ProxyServer {
                 c._client.write(name, params);
             }
         });
-    }
-}
-
-class ProxyClient { // currently wraps nmp client: maybe later extend it?
-    sendAllPackets = false;
-    whitelistedPackets = new Set<string>(["chat", "tab_complete"]); // need to test!
-    _client: mc.Client;
-    username: string;
-    proxy: ProxyServer;
-    addr?: string;
-
-    public constructor(client: mc.Client, proxy: ProxyServer) {
-        this._client = client;
-        this.username = client.username;
-        this.addr = client.socket.remoteAddress;
-        this.proxy = proxy;
-
-        // register event listeners
-        this._client.on("packet", this.handlePacket);
-        this._client.on("end", this.handleEnd);
-        this._client.on("error", this.handleError);
-    }
-
-    public canSendPacket(meta: mc.PacketMeta): boolean {
-        if(this.sendAllPackets) {
-            return true;
-        } else if(this.whitelistedPackets.has(meta.name)) {
-            return true;
-        }
-        return false;
-    }
-
-    public parseMovementPackets(data: any, meta: mc.PacketMeta): void {
-        if (meta.name === "position_look") {
-            this.proxy.facing.pitch = data.pitch;
-            this.proxy.facing.yaw = data.yaw;
-            this.proxy.pos.x = data.x;
-            this.proxy.pos.y = data.y;
-            this.proxy.pos.z = data.z;
-        }
-        if(meta.name === "look") {
-            this.proxy.facing.pitch = data.pitch;
-            this.proxy.facing.yaw = data.yaw;
-        }
-        if(meta.name === "position") {
-            this.proxy.pos.x = data.x;
-            this.proxy.pos.y = data.y;
-            this.proxy.pos.z = data.z;
-        }
-
-        this.proxy.writeToOtherClients(this, "position", {
-            x: this.proxy.pos.x,
-            y: this.proxy.pos.y,
-            z: this.proxy.pos.z,
-            pitch: this.proxy.facing.pitch,
-            yaw: this.proxy.facing.yaw,
-            flags: 0x00 // in newer versions there is an additional field (Teleport ID)
-        });
-    }
-
-    public handlePacket = (data: any, meta: mc.PacketMeta): void => {
-        if (this.canSendPacket(meta)) {
-            this.proxy.serverbound.emit("packet", data, meta);
-            this.proxy.serverbound.emit(meta.name, data, meta);
-            // TODO: emit raw, raw.packet
-            if (this.proxy.targetClient) {
-                if (this.proxy.targetClient.state === states.PLAY && meta.state === states.PLAY) {
-                    if (["position", "position_look", "look"].includes(meta.name)) {
-                        this.parseMovementPackets(data, meta);
-                    }
-                }
-                if (!this.proxy.endedTargetClient) {
-                    this.proxy.targetClient.write(meta.name, data);
-                }
-            }
-        }
-        return;
-    }
-
-    public handleEnd = () => {
-        console.log("Connection closed by client", "(" + this.addr + ")");
-        this.proxy.clients = this.proxy.clients.filter(el => el != this);
-    }
-
-    public handleError = (err: Error) => {
-        console.log("Connection error by client", "(" + this.addr + ")");
-        console.log(err.stack);
-        this.proxy.clients = this.proxy.clients.filter(el => el != this);
     }
 }
