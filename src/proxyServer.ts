@@ -1,9 +1,10 @@
 import * as mc from "minecraft-protocol";
 import { EventEmitter } from "stream";
 import * as mineflayer from "mineflayer";
-import { sleep } from "./util/sleep";
-import { ProxyClient } from "./proxyClient";
-import { logger } from "./logger";
+import sleep from "./util/sleep";
+import ProxyClient from "./proxyClient";
+import logger from "./logger";
+import PluginManager from "./pluginManager";
 
 interface Config {
     hostPort?: number,
@@ -18,7 +19,7 @@ const states = mc.states;
 
 class PacketEmitter extends EventEmitter {} // for read-only packet events
 
-export class ProxyServer {
+export default class ProxyServer {
     hostPort;
     destinationPort;
     destinationHost;
@@ -42,6 +43,8 @@ export class ProxyServer {
     };
     clientbound = new PacketEmitter();
     serverbound = new PacketEmitter();
+    pluginManager = new PluginManager(this);
+    lastTabComplete = "";
     bot: mineflayer.Bot | undefined;
 
     public constructor(config: Config) {
@@ -68,7 +71,7 @@ export class ProxyServer {
             maxPlayers: 0,
             motd: "Proxy Rewrite"
         });
-        logger.info(`proxy to ${this.destinationHost}:${this.destinationPort} running on ${this.hostPort}`);
+        logger.info(`proxy to ${this.destinationHost}:${this.destinationPort} running on ${this.hostPort} :D`);
         this.srv.on("login", this.handleProxyLogin);
     }
 
@@ -107,9 +110,14 @@ export class ProxyServer {
 
                 if (meta.state === states.PLAY && client.state === states.PLAY) {
                     if (!this.endedClient) {
+                        if(meta.name === "tab_complete") {
+                            const newCommands = this.pluginManager.getTabCompletion(this.lastTabComplete); 
+                            data.matches = data.matches.concat(newCommands);
+                        }
+
                         if (meta.name === "set_compression") {
                             this.clients.forEach(c => {
-                                c._client.compressionThreshold = data.threshold;
+                                c._client.compressionThreshold = data.threshold; //TODO: nmp pr to fix this
                             });
                         } // Set compression
 
@@ -139,48 +147,9 @@ export class ProxyServer {
         // TODO: MAKE MINEFLAYER BOT USE CUSTOM CLIENT BRAND
         } else if(this.clients.length == 2) {
             logger.debug("second client (bot) join");
-            // this.sendLoginPackets(pclient);
-            this.bot?.once("spawn", () => {
-                this.bot?.chat("hai");
-            });
 
             this.bot?.on("message", (chatMsg) => {
                 logger.info(chatMsg.toAnsi());
-            });
-
-            this.bot?.on("chat", async (username, message) => {
-                if(username === this.username) {
-                    return;
-                } else if(message.toLowerCase() === "eid") {
-                    this.bot?.chat(`My entity id is ${this.bot.entity.id}`);
-                } else if(message.toLowerCase() === "players") {
-                    this.bot?.chat(`Players: ${Object.keys(this.bot.players)} (${Object.keys(this.bot.players).length} players)`);
-                } else if(message.toLowerCase().startsWith("say ")) {
-                    this.bot?.chat(message.substring(4));
-                } else if(message.toLowerCase() === "ping") {
-                    this.bot?.chat(`My ping is ${this.bot._client.latency + this.targetClient?.latency} ms (${this.bot._client.latency} ms + ${this.targetClient?.latency} ms)`);//
-                } else if(message.toLowerCase() === "swing") {
-                    this.writeToAllClients("animation", {
-                        entityId: this.bot?.entity.id,
-                        animation: 0
-                    });
-                } else if(message.toLowerCase() === "swing a lot") {
-                    for(let i = 0; i < 50; i++) {
-                        this.writeToAllClients("animation", {
-                            entityId: this.bot?.entity.id,
-                            animation: 0
-                        });
-                        await sleep(50);
-                    }
-                } else if(message.toLowerCase() === "ouch") {
-                    for(let i = 0; i < 100; i++) {
-                        this.writeToAllClients("animation", {
-                            entityId: this.bot?.entity.id,
-                            animation: 1
-                        });
-                        await sleep(50);
-                    }
-                }
             });
         } else {
             this.sendLoginPackets(pclient);

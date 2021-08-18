@@ -5,4 +5,4 @@ const logger = new Logger({
     displayFunctionName: false,
     dateTimePattern: "hour:minute:second"
 });
-export {logger};
+export default logger;
