@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node build/index.js",
     "build": "tsc",
@@ -13,10 +14,12 @@
   "dependencies": {
     "minecraft-protocol": "^1.26.1",
     "mineflayer": "^3.9.0",
+    "sharp": "^0.29.0",
     "tslog": "^3.2.1"
   },
   "devDependencies": {
     "@types/node": "^16.6.1",
+    "@types/sharp": "^0.28.5",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0"
