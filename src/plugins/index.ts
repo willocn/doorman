@@ -1,5 +1,5 @@
-import HelloWorldPlugin from "./helloWorld";
-import MetaPlugin from "./metaPlugin";
+import HelloWorldPlugin from "./hello/helloWorld";
+import MetaPlugin from "./meta/metaPlugin";
 
 
 //TODO: export all in folder

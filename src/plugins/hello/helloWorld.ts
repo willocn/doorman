@@ -1,7 +1,7 @@
 import * as mc from "minecraft-protocol";
-import AbstractPlugin from "../abstractPlugin";
-import PluginManager from "../pluginManager";
-import ProxyServer from "../proxyServer";
+import AbstractPlugin from "../../abstractPlugin";
+import PluginManager from "../../pluginManager";
+import ProxyServer from "../../proxyServer";
 
 export default class HelloWorldPlugin extends AbstractPlugin {
     namespace = "hello";
