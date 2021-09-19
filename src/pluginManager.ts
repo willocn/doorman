@@ -16,7 +16,7 @@ export default class PluginManager {
         });
     }
 
-    private load(plugin: AbstractPlugin) {
+    public load(plugin: AbstractPlugin) {
         logger.info(`Loading plugin ${plugin.constructor.name} with namespace ${plugin.namespace}`);
         this.loadedPlugins.push(plugin);
         Object.keys(plugin.commands).forEach(commandName => {
@@ -25,7 +25,7 @@ export default class PluginManager {
         return;
     }
     
-    private unload(pluginNamespace: string) {
+    public unload(pluginNamespace: string) {
         // TOOD: remove event listeners gracefully, remove commands, remove packet transformers
         return;
     }
