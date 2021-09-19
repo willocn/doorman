@@ -17,6 +17,7 @@ export default class HelloWorldPlugin extends AbstractPlugin {
     */
     helloCommand = (args: string[]): void => {
         this.sendClientChat("hai :3");
+        this.sendClientChat(`args: ${args}`);
     }
 
     /*

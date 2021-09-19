@@ -10,7 +10,7 @@ export default class MetaPlugin extends AbstractPlugin {
         this.commands["plugins"] = this.listLoadedPlugins;
     }
 
-    listLoadedPlugins = (args: string[]): void => {
+    listLoadedPlugins = (): void => {
         this.sendClientChat(`${Object.entries(this.pluginManager.loadedPlugins).length} loaded plugins:`);
         const prettyPluginNames = Object.entries(this.pluginManager.loadedPlugins).map(([namespace, pl]) => `${pl.constructor.name} (${namespace})`);
         prettyPluginNames.forEach(pluginName => {
