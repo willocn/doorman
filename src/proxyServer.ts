@@ -17,6 +17,7 @@ interface Config {
 }
 
 const logger = getLogger("server");
+const chatLogger = getLogger("chat");
 
 const states = mc.states;
 
@@ -169,7 +170,7 @@ export default class ProxyServer {
             logger.debug("mineflayer bot joined");
 
             this.bot?.on("message", (chatMsg) => { // log chat messages with cool mineflayer events
-                logger.info(chatMsg.toAnsi());
+                chatLogger.info(chatMsg.toAnsi());
             });
         } else {
             logger.debug(pclient.username);
