@@ -50,6 +50,7 @@ export default class ProxyServer {
     pluginManager = new PluginManager(this);
     lastTabComplete = "";
     bot: mineflayer.Bot | undefined;
+    botClient: ProxyClient | undefined;
     _botUsername: string
 
     public constructor(config: Config) {
@@ -179,7 +180,7 @@ export default class ProxyServer {
             });
         } else if(pclient.username === this._botUsername) {
             logger.info("mineflayer bot connected to proxy");
-
+            this.botClient = pclient;
             this.bot?.on("message", (chatMsg) => { // log chat messages with cool mineflayer events
                 chatLogger.info(chatMsg.toAnsi());
             });
