@@ -1,6 +1,6 @@
 import AbstractPlugin from "./abstractPlugin.js";
 import ProxyServer from "./proxyServer.js";
-import * as plugins from "./plugins/index.js";
+import MetaPlugin from "./plugins/meta/metaPlugin.js";
 import getLogger from "./logger.js";
 
 const logger = getLogger("pluginManager");
@@ -11,12 +11,11 @@ export default class PluginManager {
     proxyServer: ProxyServer;
     constructor(server: ProxyServer) {
         this.proxyServer = server;
-        Object.values(plugins).forEach(plug => {
-            this.load(new plug(this.proxyServer, this));
-        });
+        this.load(MetaPlugin);
     }
 
-    public load(plugin: AbstractPlugin): boolean {
+    public load(pluginClass: typeof AbstractPlugin): boolean {
+        const plugin = new pluginClass(this.proxyServer, this);
         logger.info(`Loading plugin ${plugin.constructor.name} with namespace ${plugin.namespace}`);
         this.loadedPlugins[plugin.namespace] = plugin;
         Object.keys(plugin.commands).forEach(commandName => {

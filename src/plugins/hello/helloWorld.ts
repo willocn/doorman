@@ -24,6 +24,6 @@ export default class HelloWorldPlugin extends AbstractPlugin {
     Example packet listener, runs every time the login packet is sent
     */
     handleLoginPacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
-        this.sendClientChat(`Logged in! :D eid: ${data.entityId}`);
+        this.sendClientChat(`Ldddogged in! :D eid: ${data.entityId}`);
     }
 }
