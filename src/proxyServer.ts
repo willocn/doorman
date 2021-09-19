@@ -1,7 +1,7 @@
 import * as mc from "minecraft-protocol";
 import EventEmitter from "events";  
 import * as mineflayer from "mineflayer";
-import sleep from "./util/sleep.js";
+// import sleep from "./util/sleep.js";
 import ProxyClient from "./proxyClient.js";
 import getLogger from "./logger.js";
 import PluginManager from "./pluginManager.js";
@@ -49,6 +49,7 @@ export default class ProxyServer {
     pluginManager = new PluginManager(this);
     lastTabComplete = "";
     bot: mineflayer.Bot | undefined;
+    _botUsername: string
 
     public constructor(config: Config) {
         
@@ -85,6 +86,8 @@ export default class ProxyServer {
             }
         });
 
+        this._botUsername = `bot${Math.random().toString(36).substr(2, 6)}`;
+
         if(config.icon) {
             this.srv.favicon = config.icon;
         }
@@ -106,8 +109,9 @@ export default class ProxyServer {
             this.bot = mineflayer.createBot({
                 host: "localhost",
                 port: this.hostPort,
-                username: "PBot",
-                version: this.version
+                username: this._botUsername,
+                version: this.version,
+                brand: "mineflayer"
             });
 
             // TODO: assess intializing targetclient in construcor and connect later 
@@ -135,7 +139,7 @@ export default class ProxyServer {
 
                         if (meta.name === "set_compression") {
                             this.clients.forEach(c => {
-                                c._client.compressionThreshold = data.threshold; //TODO: nmp pr to fix this
+                                c._client.compressionThreshold = data.threshold;
                             });
                         } // Set compression
 
@@ -161,15 +165,14 @@ export default class ProxyServer {
                     c._client.end("error on targetclient");
                 });
             });
+        } else if(pclient.username === this._botUsername) {
+            logger.debug("mineflayer bot joined");
 
-        // TODO: MAKE MINEFLAYER BOT USE CUSTOM CLIENT BRAND
-        } else if(this.clients.length == 2) {
-            logger.debug("second client (bot) join");
-
-            this.bot?.on("message", (chatMsg) => {
+            this.bot?.on("message", (chatMsg) => { // log chat messages with cool mineflayer events
                 logger.info(chatMsg.toAnsi());
             });
         } else {
+            logger.debug(pclient.username);
             this.sendLoginPackets(pclient);
         }
 

@@ -5,11 +5,12 @@ import getLogger from "./logger.js";
 const states = mc.states;
 const logger = getLogger("client");
 
-export default class ProxyClient { // currently wraps nmp client: maybe later extend it?
+export default class ProxyClient {
     sendAllPackets = false;
-    whitelistedPackets = new Set<string>(["chat", "tab_complete"]); // need to test!
+    whitelistedPackets = new Set<string>(["chat", "tab_complete"]);
     _client: mc.Client;
     username: string;
+    brand?: string
     proxy: ProxyServer;
     addr?: string;
     lastTabComplete = "";
@@ -20,10 +21,16 @@ export default class ProxyClient { // currently wraps nmp client: maybe later ex
         this.addr = client.socket.remoteAddress;
         this.proxy = proxy;
 
-        // register event listeners
+        // register main event listeners
         this._client.on("packet", this.handlePacket);
         this._client.on("end", this.handleEnd);
         this._client.on("error", this.handleError);
+
+        // plugin channels
+        this._client.registerChannel("MC|Brand", ["string", []]); // old brand string
+        this._client.on("MC|Brand", (brand) => {
+            this.brand = brand;
+        });
     }
 
     public canSendPacket(meta: mc.PacketMeta): boolean {
