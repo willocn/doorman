@@ -103,15 +103,14 @@ public
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# compiled output
-build/*
 # General
 .DS_Store
 .AppleDouble
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -131,3 +130,11 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# compiled output
+build/*
+
+# plugins except for the default
+src/plugins/*
+!/src/plugins/hello/*
+!/src/plugins/meta/*
