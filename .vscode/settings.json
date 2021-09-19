@@ -6,5 +6,7 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/node_modules": true
-    }
+    },
+    "javascript.preferences.importModuleSpecifierEnding": "js",
+    "typescript.preferences.importModuleSpecifierEnding": "js"
 }
