@@ -37,6 +37,7 @@ export default class PluginManager {
         const[namespace, command] = qualifiedCommand.split(":");
         const plugin = this.loadedPlugins[namespace.substr(1)];
         if(plugin) {
+            logger.info(`Executing ${qualifiedCommand} ${args.join(" ")}`);
             return plugin.runCommand(command, args);
         }
         return false;
