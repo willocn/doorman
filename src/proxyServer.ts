@@ -68,7 +68,7 @@ export default class ProxyServer {
             version: this.version,
             maxPlayers: 0,
             motd: `§9doorman proxy§r\n§l§f▶§r ${this.destinationHost}:${this.destinationPort}`,
-            beforePing: (response, client) => {
+            beforePing: (response) => {
                 response.players.sample = [
                     {
                         "name": `§9§n${Object.keys(this.pluginManager.loadedPlugins).length} plugins`,
@@ -99,11 +99,9 @@ export default class ProxyServer {
     public handleProxyLogin = (client: mc.Client): void => {
         const addr = client.socket.remoteAddress;
         logger.info("Incoming connection", "(" + addr + ")");
-        logger.debug(client.uuid);
         const pclient = new ProxyClient(client, this);
         this.clients.push(pclient);
         if (this.clients.length == 1) { // We need to handle the first client differently.
-            logger.debug("main client joined");
             pclient.sendAllPackets = true;
 
             this.bot = mineflayer.createBot({
@@ -135,13 +133,12 @@ export default class ProxyServer {
                         if(meta.name === "player_info") { // this packet needs to be handled in a special way to make skins work
                             if(data.action === 0) {
                                 data.data.forEach((player: Record<string, any>) => {
-                                    logger.debug(`${player.name} (${player.UUID})`);
                                     if(player.UUID === this.targetClient?.uuid) {
                                         this.clients.forEach((client) => {
                                             player.UUID = client._client.uuid;
                                             client._client.write(meta.name, data);
                                         });
-                                        // player.UUID = this.clients[0]._client.uuid; // ghetto fix for now
+                                        // this fix is not sufficient, still need to rewrite basically every player_info packet to do uuid translation
                                     }
                                 });
                             }
@@ -159,10 +156,6 @@ export default class ProxyServer {
                         } // Set compression
 
                         this.writeToAllClients(meta.name, data);
-                    }
-                } else {
-                    if(meta.name === "success") {
-                        logger.debug(data);
                     }
                 }
             });
@@ -185,13 +178,12 @@ export default class ProxyServer {
                 });
             });
         } else if(pclient.username === this._botUsername) {
-            logger.debug("mineflayer bot joined");
+            logger.info("mineflayer bot connected to proxy");
 
             this.bot?.on("message", (chatMsg) => { // log chat messages with cool mineflayer events
                 chatLogger.info(chatMsg.toAnsi());
             });
         } else {
-            logger.debug(pclient.username);
             this.sendLoginPackets(pclient);
         }
 
