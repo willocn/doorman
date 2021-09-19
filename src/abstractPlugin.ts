@@ -13,7 +13,8 @@ export default class AbstractPlugin {
         this.pluginManager = pluginManager;
     }
 
-    protected sendChat(message: string): void {
+    // Send chat to clients connected to the proxy with a consistent format
+    protected sendClientChat(message: string): void {
         const resp = {
             "text": "",
             "extra": [
