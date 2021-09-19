@@ -19,7 +19,6 @@ export default class PluginManager {
     public load(plugin: AbstractPlugin): boolean {
         logger.info(`Loading plugin ${plugin.constructor.name} with namespace ${plugin.namespace}`);
         this.loadedPlugins[plugin.namespace] = plugin;
-        logger.debug(this.loadedPlugins);
         Object.keys(plugin.commands).forEach(commandName => {
             this.qualifiedCommands.push(`/${plugin.namespace}:${commandName}`);
         });
