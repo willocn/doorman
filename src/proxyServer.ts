@@ -70,11 +70,11 @@ export default class ProxyServer {
             beforePing: (response, client) => {
                 response.players.sample = [
                     {
-                        "name": `§9§n${this.pluginManager.loadedPlugins.length} plugins`,
+                        "name": `§9§n${Object.keys(this.pluginManager.loadedPlugins).length} plugins`,
                         "id": "25a0048f-d105-4a57-b2f6-2ee88b87d684"
                     }
                 ];
-                response.players.sample = response.players.sample.concat(this.pluginManager.loadedPlugins.map((plugin) => {
+                response.players.sample = response.players.sample.concat(Object.entries(this.pluginManager.loadedPlugins).map(([namespace, plugin]) => {
                     return {
                         "name": plugin.constructor.name,
                         "id": "25a0048f-d105-4a57-b2f6-2ee88b87d684"

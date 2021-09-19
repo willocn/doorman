@@ -6,7 +6,7 @@ import getLogger from "./logger.js";
 const logger = getLogger("pluginManager");
 
 export default class PluginManager {
-    loadedPlugins: AbstractPlugin[] = [];
+    loadedPlugins: Record<string, AbstractPlugin> = {};
     qualifiedCommands: string[] = [];
     proxyServer: ProxyServer;
     constructor(server: ProxyServer) {
@@ -18,7 +18,8 @@ export default class PluginManager {
 
     public load(plugin: AbstractPlugin) {
         logger.info(`Loading plugin ${plugin.constructor.name} with namespace ${plugin.namespace}`);
-        this.loadedPlugins.push(plugin);
+        this.loadedPlugins[plugin.namespace] = plugin;
+        logger.debug(this.loadedPlugins);
         Object.keys(plugin.commands).forEach(commandName => {
             this.qualifiedCommands.push(`/${plugin.namespace}:${commandName}`);
         });
@@ -26,7 +27,7 @@ export default class PluginManager {
     }
     
     public unload(pluginNamespace: string) {
-        // TOOD: remove event listeners gracefully, remove commands, remove packet transformers
+        // TODO: remove event listeners gracefully, remove commands, remove packet transformers
         return;
     }
 
@@ -36,7 +37,7 @@ export default class PluginManager {
 
     executeCommand(qualifiedCommand: string, args: string[]): boolean {
         const[namespace, command] = qualifiedCommand.split(":");
-        const plugin = this.loadedPlugins.find(p => p.namespace == namespace.substr(1));
+        const plugin = this.loadedPlugins[namespace.substr(1)];
         if(plugin) {
             return plugin.runCommand(command, args);
         }
