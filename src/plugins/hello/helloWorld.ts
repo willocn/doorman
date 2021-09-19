@@ -16,13 +16,13 @@ export default class HelloWorldPlugin extends AbstractPlugin {
     Example command. arg parsing is left up to the plugin.
     */
     helloCommand = (args: string[]): void => {
-        this.sendChat("hai :3");
+        this.sendClientChat("hai :3");
     }
 
     /*
     Example packet listener, runs every time the login packet is sent
     */
     handleLoginPacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
-        this.sendChat(`Logged in! :D eid: ${data.entityId}`);
+        this.sendClientChat(`Logged in! :D eid: ${data.entityId}`);
     }
 }
