@@ -82,7 +82,6 @@ export default class ProxyServer {
                     };
                 }));
                 
-                console.log(response.players);
                 return response;
             }
         });
@@ -100,7 +99,7 @@ export default class ProxyServer {
     public handleProxyLogin = (client: mc.Client): void => {
         const addr = client.socket.remoteAddress;
         logger.info("Incoming connection", "(" + addr + ")");
-        // console.log(this.clients);
+        logger.debug(client.uuid);
         const pclient = new ProxyClient(client, this);
         this.clients.push(pclient);
         if (this.clients.length == 1) { // We need to handle the first client differently.
@@ -130,9 +129,24 @@ export default class ProxyServer {
                 this.clientbound.emit("packet", data, meta);
                 this.clientbound.emit(meta.name, data, meta);
                 // TODO: emit raw, raw.packet
-
                 if (meta.state === states.PLAY && client.state === states.PLAY) {
                     if (!this.endedClient) {
+
+                        if(meta.name === "player_info") { // this packet needs to be handled in a special way to make skins work
+                            if(data.action === 0) {
+                                data.data.forEach((player: Record<string, any>) => {
+                                    logger.debug(`${player.name} (${player.UUID})`);
+                                    if(player.UUID === this.targetClient?.uuid) {
+                                        this.clients.forEach((client) => {
+                                            player.UUID = client._client.uuid;
+                                            client._client.write(meta.name, data);
+                                        });
+                                        // player.UUID = this.clients[0]._client.uuid; // ghetto fix for now
+                                    }
+                                });
+                            }
+                        }
+
                         if(meta.name === "tab_complete") {
                             const newCommands = this.pluginManager.getTabCompletion(this.lastTabComplete); 
                             data.matches = data.matches.concat(newCommands);
@@ -145,6 +159,10 @@ export default class ProxyServer {
                         } // Set compression
 
                         this.writeToAllClients(meta.name, data);
+                    }
+                } else {
+                    if(meta.name === "success") {
+                        logger.debug(data);
                     }
                 }
             });
@@ -187,6 +205,7 @@ export default class ProxyServer {
         TODO: send chunk and entity data to new clients
         see https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/examples/server_world/mc.js#L43
         */
+        // TODO: SKIN MADNESS
         pc._client.write("login", {
             entityId: this.bot?.entity.id,
             levelType: "default",
