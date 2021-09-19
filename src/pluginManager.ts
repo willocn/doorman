@@ -16,19 +16,19 @@ export default class PluginManager {
         });
     }
 
-    public load(plugin: AbstractPlugin) {
+    public load(plugin: AbstractPlugin): boolean {
         logger.info(`Loading plugin ${plugin.constructor.name} with namespace ${plugin.namespace}`);
         this.loadedPlugins[plugin.namespace] = plugin;
         logger.debug(this.loadedPlugins);
         Object.keys(plugin.commands).forEach(commandName => {
             this.qualifiedCommands.push(`/${plugin.namespace}:${commandName}`);
         });
-        return;
+        return true;
     }
     
-    public unload(pluginNamespace: string) {
+    public unload(pluginNamespace: string): boolean {
         // TODO: remove event listeners gracefully, remove commands, remove packet transformers
-        return;
+        return true;
     }
 
     getTabCompletion(commandPrefix: string): string[] {
