@@ -1,5 +1,6 @@
-import { readFileSync } from "fs";
+// import { readFileSync } from "fs";
 import ProxyServer from "./proxyServer.js";
+import HelloWorldPlugin from "./plugins/hello/helloWorld.js";
 import sharp from "sharp";
 import chalk from "chalk";
 
@@ -14,3 +15,5 @@ const p = new ProxyServer({
     username: "frankenstein",
     icon: b64
 });
+
+p.pluginManager.load(HelloWorldPlugin);
