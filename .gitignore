@@ -133,8 +133,3 @@ Temporary Items
 
 # compiled output
 build/*
-
-# plugins except for the default
-src/plugins/*
-!/src/plugins/hello/*
-!/src/plugins/meta/*
