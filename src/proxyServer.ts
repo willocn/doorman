@@ -87,7 +87,7 @@ export default class ProxyServer {
             }
         });
 
-        this._botUsername = `bot${Math.random().toString(36).substr(2, 6)}`;
+        this._botUsername = `bot_${Math.random().toString(36).substr(2, 6)}`;
 
         if(config.icon) {
             this.srv.favicon = config.icon;
@@ -102,7 +102,7 @@ export default class ProxyServer {
         logger.info("Incoming connection", "(" + addr + ")");
         const pclient = new ProxyClient(client, this);
         this.clients.push(pclient);
-        if (this.clients.length == 1) { // We need to handle the first client differently.
+        if (this.clients.length == 1) { // We need to handle the first client differently
             pclient.sendAllPackets = true;
 
             this.bot = mineflayer.createBot({
