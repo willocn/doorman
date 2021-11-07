@@ -1,4 +1,5 @@
 import * as mc from "minecraft-protocol";
+import { json } from "stream/consumers";
 import AbstractPlugin from "../../abstractPlugin.js";
 import PluginManager from "../../pluginManager.js";
 import ProxyServer from "../../proxyServer.js";
@@ -23,7 +24,8 @@ export default class HelloWorldPlugin extends AbstractPlugin {
     /*
     Example packet listener, runs every time the login packet is sent
     */
-    handleLoginPacket = (data: Record<string, any>, meta: mc.PacketMeta): void => {
+    handleLoginPacket = async (data: Record<string, any>, meta: mc.PacketMeta): Promise<void> => {
         this.sendClientChat(`Logged in! :D eid: ${data.entityId}`);
+        this.sendClientChat(`Login packet:\n${JSON.stringify(data, null, 2)}`);
     }
 }
