@@ -4,7 +4,7 @@ import ProxyServer from "./proxyServer.js";
 export default class AbstractPlugin {
     proxyServer: ProxyServer;
     pluginManager: PluginManager;
-    namespace = "proxy";
+    namespace = "proxy"; // this is the default namespace, plz change it!
     commands: {
         [commandName: string]: (args: string[]) => void
     } = {};
