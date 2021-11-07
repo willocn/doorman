@@ -13,16 +13,16 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "chalk": "^4.1.2",
-    "minecraft-protocol": "^1.26.1",
-    "mineflayer": "^3.9.0",
-    "sharp": "^0.29.0",
-    "tslog": "^3.2.1"
+    "minecraft-protocol": "^1.27.2",
+    "mineflayer": "^3.11.2",
+    "sharp": "^0.29.2",
+    "tslog": "^3.2.2"
   },
   "devDependencies": {
-    "@types/node": "^16.6.1",
-    "@types/sharp": "^0.28.5",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "eslint": "^7.32.0"
+    "@types/node": "^16.11.6",
+    "@types/sharp": "^0.29.3",
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "eslint": "^8.2.0"
   }
 }
