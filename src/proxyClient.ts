@@ -104,13 +104,31 @@ export default class ProxyClient {
     }
 
     public handleEnd = (): void => {
-        logger.error("Connection closed by client", "(" + this.addr + ")");
+        logger.error(`Connection closed by ${this.username} (${this.addr})`);
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
+        if(this.sendAllPackets == true) {
+            this.proxy.endedClient = true;
+            this.proxy.targetClient?.end();
+            this.proxy.writeToAllClients("kick_disconnect", {
+                "reason": JSON.stringify({
+                    "text": `Connection closed by ${this.username} (${this.addr})`
+                })
+            });
+        }
     }
 
     public handleError = (err: Error): void => {
-        logger.error("Connection error by client", "(" + this.addr + ")");
+        logger.error(`Connection error by ${this.username} (${this.addr})`);
         logger.error(err.stack);
         this.proxy.clients = this.proxy.clients.filter(el => el != this);
+        if(this.sendAllPackets == true) {
+            this.proxy.endedClient = true;
+            this.proxy.targetClient?.end();
+            this.proxy.writeToAllClients("kick_disconnect", {
+                "reason": JSON.stringify({
+                    "text": `Connection error by ${this.username} (${this.addr})`
+                })
+            });
+        }
     }
 }
