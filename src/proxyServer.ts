@@ -132,17 +132,15 @@ export default class ProxyServer {
                     if (!this.endedClient) {
 
                         if(meta.name === "player_info") { // this packet needs to be handled in a special way to make skins work
-                            if(data.action === 0) {
-                                data.data.forEach((player: Record<string, any>) => {
-                                    if(player.UUID === this.targetClient?.uuid) {
-                                        this.clients.forEach((client) => {
-                                            player.UUID = client._client.uuid;
-                                            client._client.write(meta.name, data);
-                                        });
-                                        // this fix is not sufficient, still need to rewrite basically every player_info packet to do uuid translation
-                                    }
-                                });
-                            }
+                            data.data.forEach((player: Record<string, any>) => {
+                                if(player.UUID === this.targetClient?.uuid) {
+                                    this.clients.forEach((client) => {
+                                        player.UUID = client._client.uuid;
+                                        client._client.write(meta.name, data);
+                                    });
+                                }
+                            });
+                            return; // otherwise we send packet twice
                         }
 
                         if(meta.name === "tab_complete") {
