@@ -10,7 +10,7 @@ export default class ProxyClient {
     whitelistedPackets = new Set<string>(["chat", "tab_complete"]);
     _client: mc.Client;
     username: string;
-    brand?: string
+    brand?: string;
     proxy: ProxyServer;
     addr?: string;
     lastTabComplete = "";
@@ -101,7 +101,7 @@ export default class ProxyClient {
             }
         }
         return;
-    }
+    };
 
     public handleEnd = (): void => {
         logger.error(`Connection closed by ${this.username} (${this.addr})`);
@@ -115,7 +115,7 @@ export default class ProxyClient {
                 })
             });
         }
-    }
+    };
 
     public handleError = (err: Error): void => {
         logger.error(`Connection error by ${this.username} (${this.addr})`);
@@ -130,5 +130,5 @@ export default class ProxyClient {
                 })
             });
         }
-    }
+    };
 }

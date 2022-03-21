@@ -51,7 +51,7 @@ export default class ProxyServer {
     lastTabComplete = "";
     bot: mineflayer.Bot | undefined;
     botClient: ProxyClient | undefined;
-    _botUsername: string
+    _botUsername: string;
 
     public constructor(config: Config) {
         
@@ -186,7 +186,7 @@ export default class ProxyServer {
             this.sendLoginPackets(pclient);
         }
 
-    }
+    };
 
     public sendLoginPackets(pc: ProxyClient): void {
         /* For new clients, we need to send the inital login packets

@@ -16,5 +16,5 @@ export default class MetaPlugin extends AbstractPlugin {
         prettyPluginNames.forEach(pluginName => {
             this.sendClientChat(pluginName);
         });
-    }
+    };
 }
